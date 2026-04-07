@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#abaab4",
+                        "surface-container-high": "#e8e8e8",
+                        "secondary": "#5d5e66",
+                        "tertiary": "#3a3c3d",
+                        "surface-bright": "#f9f9f9",
+                        "on-primary-fixed-variant": "#e2e2e2",
+                        "outline": "#777777",
+                        "on-primary-container": "#ffffff",
+                        "tertiary-fixed-dim": "#454748",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-secondary-fixed-variant": "#3a3b43",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#474747",
+                        "primary-fixed-dim": "#474747",
+                        "outline-variant": "#c6c6c6",
+                        "primary": "#000000",
+                        "on-primary-fixed": "#ffffff",
+                        "inverse-primary": "#c6c6c6",
+                        "inverse-on-surface": "#f0f1f1",
+                        "on-tertiary-fixed": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary": "#e2e2e3",
+                        "surface-dim": "#dadada",
+                        "on-secondary-fixed": "#1a1b22",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed": "#c6c5cf",
+                        "background": "#f9f9f9",
+                        "on-surface": "#1a1c1c",
+                        "primary-fixed": "#5e5e5e",
+                        "on-background": "#1a1c1c",
+                        "surface-container-low": "#f3f3f4",
+                        "inverse-surface": "#2f3131",
+                        "on-secondary-container": "#1a1b22",
+                        "surface-container": "#eeeeee",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed-variant": "#e2e2e3",
+                        "primary-container": "#3b3b3b",
+                        "tertiary-fixed": "#5d5e60",
+                        "on-primary": "#e2e2e2",
+                        "surface-variant": "#e2e2e2",
+                        "secondary-container": "#d4d3dd",
+                        "surface": "#f9f9f9",
+                        "on-error-container": "#410002",
+                        "tertiary-container": "#737576",
+                        "on-tertiary-container": "#ffffff",
+                        "surface-tint": "#5e5e5e"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Outfit", "sans-serif"],
+                        "body": ["DM Sans", "sans-serif"],
+                        "label": ["DM Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: #f9f9f9;
+            color: #1a1c1c;
+        }
+
+        h1,
+        h2,
+        h3,
+        .font-headline {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-background pb-32">
+    <!-- TopAppBar -->
+    <header
+        class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-zinc-50/80 dark:bg-zinc-950/80 backdrop-blur-xl">
+        <div class="flex items-center gap-4">
+            <button class="p-2 hover:bg-zinc-200 transition-colors rounded-full active:scale-95 duration-150">
+                <span class="material-symbols-outlined text-black">menu</span>
+            </button>
+            <h1 class="text-xl font-bold tracking-tighter text-black">FitCamp</h1>
+        </div>
+        <div class="flex items-center">
+            <img alt="Elena Rostova" class="w-10 h-10 rounded-full object-cover"
+                data-alt="portrait of a confident athletic woman with short dark hair in a professional studio setting with soft lighting"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqlhKLE-GBFIkukZmg64pgRtP8QirlgFaoQpTG8R8sKsNBQTml_jSv-yj0bV9oY6CizVexN3x7echr7_joP0DGIrykCF4GZlgcQbf_Zeby57sXtaFIdBMvLkBjUzKif77eLsgv0K9pTVXQ40REqxw5FtweoIohvXdC0eh-dHPbgPqC4SjOMweXDTAflzdTN0cCpqZqe9rVFknCos5UkjvCsf0O9qRSTquhXiDCNR_chcoqKpd1oSV7UK86heoTytkHUqymxz7iWIE" />
+        </div>
+    </header>
+    <main class="mt-20 px-6 max-w-xl mx-auto">
+        <!-- Hero Profile Section -->
+        <section class="mb-10 text-center">
+            <div class="relative inline-block mb-6">
+                <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-surface-container-lowest shadow-xl">
+                    <img alt="Elena Rostova Profile" class="w-full h-full object-cover"
+                        data-alt="Close up portrait of Elena Rostova, a professional athlete with focused expression, high contrast black and white lighting"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKLGZeduUbS2x5Iw5eaTsWKHga8aVlNA9HhfNEekVpT9QwhrgdK4NI5Z7vXkW6zIojVanBy5vhe9YWUFkPg6eX1WhGvWygWuYahnL6f-7OWM8c9usjzByVVPqJ84tf5ckdXzzI0LO5FCMBOf-LA6tLF0Dfhg3G1Rzy8Zqp61leAfNTWPvuHf06MurkxR59pKYvPJARTkYILaiuvQwBqqGmkkiA02KEIt_9TK8kyNCXrstXHgrdi_v4ODD_9Rj7gRisvZwJ4DggB8s" />
+                </div>
+                <div class="absolute bottom-1 right-1 bg-primary text-white p-1.5 rounded-full border-2 border-white">
+                    <span class="material-symbols-outlined text-[16px]"
+                        style="font-variation-settings: 'FILL' 1;">verified</span>
+                </div>
+            </div>
+            <h2 class="text-[2.0rem] font-semibold leading-tight mb-1 text-primary">Elena Rostova</h2>
+            <p class="text-on-surface-variant font-medium tracking-wide text-sm uppercase mb-8">Premium Member • Pro
+                Level</p>
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-3 gap-4">
+                <div class="bg-surface-container-lowest p-5 rounded-xl shadow-sm">
+                    <span
+                        class="block text-[0.75rem] font-semibold text-on-surface-variant uppercase mb-2 tracking-widest">Height</span>
+                    <span class="text-2xl font-bold font-headline text-primary">174<span
+                            class="text-sm font-normal ml-0.5">cm</span></span>
+                </div>
+                <div class="bg-surface-container-lowest p-5 rounded-xl shadow-sm">
+                    <span
+                        class="block text-[0.75rem] font-semibold text-on-surface-variant uppercase mb-2 tracking-widest">Weight</span>
+                    <span class="text-2xl font-bold font-headline text-primary">68<span
+                            class="text-sm font-normal ml-0.5">kg</span></span>
+                </div>
+                <div class="bg-surface-container-lowest p-5 rounded-xl shadow-sm">
+                    <span
+                        class="block text-[0.75rem] font-semibold text-on-surface-variant uppercase mb-2 tracking-widest">Age</span>
+                    <span class="text-2xl font-bold font-headline text-primary">28<span
+                            class="text-sm font-normal ml-0.5">y</span></span>
+                </div>
+            </div>
+        </section>
+        <!-- AI Insights Section -->
+        <section class="mb-10">
+            <h3 class="text-[1.375rem] font-semibold mb-6 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">auto_awesome</span>
+                AI Insights
+            </h3>
+            <div class="flex flex-col gap-4">
+                <div class="flex items-center gap-4 bg-primary text-white p-5 rounded-xl">
+                    <div class="p-3 bg-zinc-800 rounded-full">
+                        <span class="material-symbols-outlined text-white">restaurant</span>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-[1.0rem] font-medium leading-snug">Eat more protein today</p>
+                        <p class="text-xs text-zinc-400 mt-1">Goal: +35g to reach muscle recovery target</p>
+                    </div>
+                    <span class="material-symbols-outlined text-zinc-500">chevron_right</span>
+                </div>
+                <div class="flex items-center gap-4 bg-surface-container-low p-5 rounded-xl">
+                    <div class="p-3 bg-white rounded-full">
+                        <span class="material-symbols-outlined text-primary">fitness_center</span>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-[1.0rem] font-medium leading-snug">Next suggested workout: Chest &amp; Triceps
+                        </p>
+                        <p class="text-xs text-on-surface-variant mt-1">Based on your 48h recovery score</p>
+                    </div>
+                    <span class="material-symbols-outlined text-outline-variant">chevron_right</span>
+                </div>
+            </div>
+        </section>
+        <!-- Progress Trends Section -->
+        <section class="mb-10">
+            <div class="flex justify-between items-end mb-6">
+                <h3 class="text-[1.375rem] font-semibold">Progress Trends</h3>
+                <span class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Last 30 Days</span>
+            </div>
+            <div class="bg-[#F4F4F5] p-8 rounded-xl relative overflow-hidden">
+                <div class="mb-6 flex items-center gap-4">
+                    <div class="flex flex-col">
+                        <span
+                            class="text-[3.5rem] font-bold font-headline leading-none text-primary tracking-tighter">14.2%</span>
+                        <span
+                            class="text-[0.75rem] font-semibold uppercase text-on-surface-variant tracking-widest">Total
+                            Improvement</span>
+                    </div>
+                </div>
+                <!-- Minimalist Line Chart Simulation -->
+                <div class="h-40 w-full flex items-end gap-1.5 pt-4">
+                    <div class="flex-1 bg-zinc-200 h-1/3 rounded-t-sm"></div>
+                    <div class="flex-1 bg-zinc-200 h-2/5 rounded-t-sm"></div>
+                    <div class="flex-1 bg-zinc-200 h-1/2 rounded-t-sm"></div>
+                    <div class="flex-1 bg-zinc-200 h-3/5 rounded-t-sm"></div>
+                    <div class="flex-1 bg-zinc-300 h-3/4 rounded-t-sm"></div>
+                    <div class="flex-1 bg-zinc-400 h-2/3 rounded-t-sm"></div>
+                    <div class="flex-1 bg-zinc-500 h-4/5 rounded-t-sm"></div>
+                    <div class="flex-1 bg-primary h-full rounded-t-sm"></div>
+                </div>
+                <div class="mt-4 flex justify-between text-[0.6rem] font-bold uppercase text-zinc-400 tracking-widest">
+                    <span>Week 1</span>
+                    <span>Week 2</span>
+                    <span>Week 3</span>
+                    <span>Now</span>
+                </div>
+            </div>
+        </section>
+        <!-- Achievements Mini Bento -->
+        <section class="mb-12">
+            <h3 class="text-[1.375rem] font-semibold mb-6">Recent Milestones</h3>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-surface-container-lowest p-6 rounded-xl flex flex-col items-center text-center">
+                    <span class="material-symbols-outlined text-[32px] mb-3 text-primary">trophy</span>
+                    <span class="text-sm font-bold">100 Day Streak</span>
+                </div>
+                <div class="bg-surface-container-lowest p-6 rounded-xl flex flex-col items-center text-center">
+                    <span class="material-symbols-outlined text-[32px] mb-3 text-primary">speed</span>
+                    <span class="text-sm font-bold">PR: 120kg Squat</span>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- BottomNavBar -->
+    <nav
+        class="fixed bottom-0 left-0 right-0 z-50 flex justify-around items-center px-4 bg-black/90 dark:bg-zinc-900/90 backdrop-blur-xl rounded-full mx-6 mb-8 h-16 w-auto shadow-xl">
+        <a class="flex items-center justify-center text-zinc-500 p-3 hover:text-zinc-200 transition-all" href="#">
+            <span class="material-symbols-outlined">home</span>
+        </a>
+        <a class="flex items-center justify-center text-zinc-500 p-3 hover:text-zinc-200 transition-all" href="#">
+            <span class="material-symbols-outlined">restaurant</span>
+        </a>
+        <a class="flex items-center justify-center text-zinc-500 p-3 hover:text-zinc-200 transition-all" href="#">
+            <span class="material-symbols-outlined">fitness_center</span>
+        </a>
+        <a class="flex items-center justify-center bg-zinc-800 dark:bg-zinc-700 text-white rounded-full p-3 active:scale-110 duration-200"
+            href="#">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+        </a>
+    </nav>
+</body>
+
+</html>

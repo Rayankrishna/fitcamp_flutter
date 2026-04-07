@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary-fixed-dim": "#abaab4",
+                        "surface-container-high": "#e8e8e8",
+                        "secondary": "#5d5e66",
+                        "tertiary": "#3a3c3d",
+                        "surface-bright": "#f9f9f9",
+                        "on-primary-fixed-variant": "#e2e2e2",
+                        "outline": "#777777",
+                        "on-primary-container": "#ffffff",
+                        "tertiary-fixed-dim": "#454748",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-secondary-fixed-variant": "#3a3b43",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#474747",
+                        "primary-fixed-dim": "#474747",
+                        "outline-variant": "#c6c6c6",
+                        "primary": "#000000",
+                        "on-primary-fixed": "#ffffff",
+                        "inverse-primary": "#c6c6c6",
+                        "inverse-on-surface": "#f0f1f1",
+                        "on-tertiary-fixed": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary": "#e2e2e3",
+                        "surface-dim": "#dadada",
+                        "on-secondary-fixed": "#1a1b22",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed": "#c6c5cf",
+                        "background": "#f9f9f9",
+                        "on-surface": "#1a1c1c",
+                        "primary-fixed": "#5e5e5e",
+                        "on-background": "#1a1c1c",
+                        "surface-container-low": "#f3f3f4",
+                        "inverse-surface": "#2f3131",
+                        "on-secondary-container": "#1a1b22",
+                        "surface-container": "#eeeeee",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed-variant": "#e2e2e3",
+                        "primary-container": "#3b3b3b",
+                        "tertiary-fixed": "#5d5e60",
+                        "on-primary": "#e2e2e2",
+                        "surface-variant": "#e2e2e2",
+                        "secondary-container": "#d4d3dd",
+                        "surface": "#f9f9f9",
+                        "on-error-container": "#410002",
+                        "tertiary-container": "#737576",
+                        "on-tertiary-container": "#ffffff",
+                        "surface-tint": "#5e5e5e"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Outfit", "sans-serif"],
+                        "body": ["DM Sans", "sans-serif"],
+                        "label": ["DM Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        h1,
+        h2,
+        h3,
+        .headline-font {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-background min-h-screen pb-32">
+    <!-- TopAppBar -->
+    <header
+        class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-zinc-50/80 dark:bg-zinc-950/80 backdrop-blur-xl">
+        <div class="flex items-center gap-4">
+            <button class="p-2 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors active:scale-95 duration-150">
+                <span class="material-symbols-outlined text-black dark:text-white">menu</span>
+            </button>
+            <span class="text-xl font-bold tracking-tighter text-black dark:text-white headline-font">FitCamp</span>
+        </div>
+        <div class="flex items-center">
+            <img alt="Profile" class="w-10 h-10 rounded-full object-cover"
+                data-alt="Close-up portrait of a fit man in athletic wear against a minimal grey background with professional studio lighting"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdM1zMmoM2--fZGdFMycVgh_9ze8PWUCQlNyPniRdvUuJ-r6-j9NMn7HWIFVtyqz6FW7CP9PkFh0aZHkKARMTd7eOjI0qpEs-hK_fo8QYjOfgFCnn-af_haoFoOtHNlOza-ZCLQpYfrl4wJdKp9s0YUB5j2A6HKQ2hcKb0C8k-N-jHyVaJ-4MzEUf7zDuoIxDBB6_WMv9KR2S2K7EtPGGDEGtPSL74KXOVAk79JKTL8uonwyoKjFbQcYd-0aLcGqiCNgpeHn6IJV4" />
+        </div>
+    </header>
+    <!-- Main Content -->
+    <main class="pt-24 px-6 max-w-2xl mx-auto">
+        <div class="flex flex-col gap-8">
+            <!-- Header Section -->
+            <div class="flex flex-col gap-6">
+                <h1 class="text-[3.5rem] leading-none font-bold tracking-tight headline-font">My Workouts</h1>
+                <!-- Start New Workout Button -->
+                <button
+                    class="w-full bg-primary text-on-primary h-14 rounded-full flex items-center justify-center gap-2 text-lg font-bold transition-all active:scale-95">
+                    <span class="material-symbols-outlined">add</span>
+                    Start New Workout
+                </button>
+            </div>
+            <!-- List Section -->
+            <div class="flex flex-col gap-4">
+                <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">Active &amp; Past
+                    Sessions</p>
+                <!-- Workout Card 1 (Active) -->
+                <div
+                    class="bg-surface-container-low p-8 rounded-xl flex flex-col gap-6 transition-all hover:bg-surface-container">
+                    <div class="flex justify-between items-start">
+                        <div class="flex flex-col gap-1">
+                            <h2 class="text-2xl font-semibold headline-font text-primary">Leg Day</h2>
+                            <div class="flex items-center gap-2 text-on-surface-variant text-sm">
+                                <span class="material-symbols-outlined text-[18px]">schedule</span>
+                                <span>45 min elapsed</span>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-primary text-on-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter">
+                            In Progress
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <span
+                            class="bg-surface-container-lowest px-4 py-2 rounded-full text-sm font-medium">Quads</span>
+                        <span
+                            class="bg-surface-container-lowest px-4 py-2 rounded-full text-sm font-medium">Hamstrings</span>
+                        <span
+                            class="bg-surface-container-lowest px-4 py-2 rounded-full text-sm font-medium">Glutes</span>
+                    </div>
+                </div>
+                <!-- Workout Card 2 -->
+                <div
+                    class="bg-surface-container-low p-8 rounded-xl flex flex-col gap-6 transition-all hover:bg-surface-container">
+                    <div class="flex justify-between items-start">
+                        <div class="flex flex-col gap-1">
+                            <h2 class="text-2xl font-semibold headline-font text-primary">Push Session</h2>
+                            <div class="flex items-center gap-2 text-on-surface-variant text-sm">
+                                <span class="material-symbols-outlined text-[18px]">event</span>
+                                <span>Yesterday • 1h 12m</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <span
+                            class="bg-surface-container-lowest px-4 py-2 rounded-full text-sm font-medium">Chest</span>
+                        <span
+                            class="bg-surface-container-lowest px-4 py-2 rounded-full text-sm font-medium">Shoulders</span>
+                        <span
+                            class="bg-surface-container-lowest px-4 py-2 rounded-full text-sm font-medium">Triceps</span>
+                    </div>
+                </div>
+                <!-- Workout Card 3 -->
+                <div
+                    class="bg-surface-container-low p-8 rounded-xl flex flex-col gap-6 transition-all hover:bg-surface-container">
+                    <div class="flex justify-between items-start">
+                        <div class="flex flex-col gap-1">
+                            <h2 class="text-2xl font-semibold headline-font text-primary">Back &amp; Biceps</h2>
+                            <div class="flex items-center gap-2 text-on-surface-variant text-sm">
+                                <span class="material-symbols-outlined text-[18px]">event</span>
+                                <span>Oct 24 • 58m</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-surface-container-lowest px-4 py-2 rounded-full text-sm font-medium">Lats</span>
+                        <span
+                            class="bg-surface-container-lowest px-4 py-2 rounded-full text-sm font-medium">Rhomboids</span>
+                        <span
+                            class="bg-surface-container-lowest px-4 py-2 rounded-full text-sm font-medium">Biceps</span>
+                    </div>
+                </div>
+                <!-- Workout Card 4 -->
+                <div
+                    class="bg-surface-container-low p-8 rounded-xl flex flex-col gap-6 transition-all hover:bg-surface-container">
+                    <div class="flex justify-between items-start">
+                        <div class="flex flex-col gap-1">
+                            <h2 class="text-2xl font-semibold headline-font text-primary">Cardio Blast</h2>
+                            <div class="flex items-center gap-2 text-on-surface-variant text-sm">
+                                <span class="material-symbols-outlined text-[18px]">event</span>
+                                <span>Oct 22 • 35m</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-surface-container-lowest px-4 py-2 rounded-full text-sm font-medium">Full
+                            Body</span>
+                        <span
+                            class="bg-surface-container-lowest px-4 py-2 rounded-full text-sm font-medium">Endurance</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- BottomNavBar -->
+    <nav
+        class="fixed bottom-0 left-0 right-0 z-50 flex justify-around items-center px-4 bg-black/90 dark:bg-zinc-900/90 backdrop-blur-xl rounded-full mx-6 mb-8 h-16 w-auto shadow-xl">
+        <!-- Home -->
+        <a class="flex items-center justify-center text-zinc-500 p-3 hover:text-zinc-200 transition-all" href="#">
+            <span class="material-symbols-outlined">home</span>
+        </a>
+        <!-- Restaurant -->
+        <a class="flex items-center justify-center text-zinc-500 p-3 hover:text-zinc-200 transition-all" href="#">
+            <span class="material-symbols-outlined">restaurant</span>
+        </a>
+        <!-- Fitness Center (ACTIVE) -->
+        <a class="flex items-center justify-center bg-zinc-800 dark:bg-zinc-700 text-white rounded-full p-3 scale-110 duration-200"
+            href="#">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+        </a>
+        <!-- Person -->
+        <a class="flex items-center justify-center text-zinc-500 p-3 hover:text-zinc-200 transition-all" href="#">
+            <span class="material-symbols-outlined">person</span>
+        </a>
+    </nav>
+</body>
+
+</html>
