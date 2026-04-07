@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../store/auth_store.dart';
+import '../../shared/bottom_nav_bar.dart';
 
 class WorkoutTrackerPage extends StatefulWidget {
   const WorkoutTrackerPage({super.key});
@@ -100,7 +101,7 @@ class _WorkoutTrackerPageState extends State<WorkoutTrackerPage> {
                   Column(
                     children: [
                       ..._store.workouts!.map((workout) => _buildWorkoutCard(workout)),
-                      const SizedBox(height: 100),
+                      const SizedBox(height: 20),
                     ],
                   ),
               ],
@@ -108,6 +109,7 @@ class _WorkoutTrackerPageState extends State<WorkoutTrackerPage> {
           );
         },
       ),
+      bottomNavigationBar: const FloatingBottomNavBar(currentIndex: 2),
     );
   }
 

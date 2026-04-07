@@ -351,6 +351,16 @@ mixin _$AuthStore on _AuthStoreBase, Store {
     return _$fetchProfileAsyncAction.run(() => super.fetchProfile());
   }
 
+  late final _$getStoredValuesAsyncAction = AsyncAction(
+    '_AuthStoreBase.getStoredValues',
+    context: context,
+  );
+
+  @override
+  Future<void> getStoredValues() {
+    return _$getStoredValuesAsyncAction.run(() => super.getStoredValues());
+  }
+
   @override
   String toString() {
     return '''

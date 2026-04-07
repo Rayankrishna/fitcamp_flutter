@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:fitcamp_flutter/shared/enums.dart';
 import '../../store/auth_store.dart';
 import '../../shared/animated_summary_card.dart';
+import '../../shared/bottom_nav_bar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -102,7 +103,7 @@ class _HomePageState extends State<HomePage> {
                         child: _buildWorkoutSummary(),
                       ),
 
-                      const SizedBox(height: 130),
+                      const SizedBox(height: 100),
                     ],
                   ),
                 );
@@ -111,6 +112,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
+      bottomNavigationBar: const FloatingBottomNavBar(currentIndex: 0),
     );
   }
 

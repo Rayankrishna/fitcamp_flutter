@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../store/auth_store.dart';
+import '../../shared/bottom_nav_bar.dart';
 
 class FoodTrackerPage extends StatefulWidget {
   const FoodTrackerPage({super.key});
@@ -122,20 +123,39 @@ class _FoodTrackerPageState extends State<FoodTrackerPage> {
                 else
                   ...items.map((item) => _buildMealCard(item)),
 
-                const SizedBox(height: 120),
+                const SizedBox(height: 20),
               ],
             ),
           );
         },
       ),
+      bottomNavigationBar: const FloatingBottomNavBar(currentIndex: 1),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 90.0), // Elevate above nav bar
-        child: FloatingActionButton.extended(
-          onPressed: () {},
-          backgroundColor: Colors.black,
-          icon: const Icon(Icons.barcode_reader, color: Colors.white),
-          label: const Text("SCAN BARCODE", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
-        ).animate().slideY(begin: 0.5, delay: 500.ms),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            FloatingActionButton.extended(
+              heroTag: "manualAction",
+              onPressed: () {},
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.black,
+              elevation: 2,
+              icon: const Icon(Icons.add_rounded),
+              label: const Text("ADD MEAL", style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+            ).animate().slideX(begin: 0.5, delay: 500.ms).fadeIn(),
+            const SizedBox(width: 12),
+            FloatingActionButton.extended(
+              heroTag: "barcodeAction",
+              onPressed: () {},
+              backgroundColor: Colors.black,
+              foregroundColor: Colors.white,
+              icon: const Icon(Icons.barcode_reader),
+              label: const Text("SCAN CODE", style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+            ).animate().slideX(begin: -0.5, delay: 500.ms).fadeIn(),
+          ],
+        ),
       ),
     );
   }

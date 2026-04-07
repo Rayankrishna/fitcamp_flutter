@@ -1,8 +1,8 @@
+import 'package:fitcamp_flutter/ui/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../store/auth_store.dart';
-import '../main_scaffold.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
     if (success && mounted) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const MainScaffold()),
+        MaterialPageRoute(builder: (_) => const HomePage()),
       );
     } else if (mounted && _authStore.errorMessage != null) {
       ScaffoldMessenger.of(

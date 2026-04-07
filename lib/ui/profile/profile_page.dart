@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../store/auth_store.dart';
+import '../../shared/bottom_nav_bar.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -86,12 +87,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 12),
                 _buildInsightCard(Icons.fitness_center, "Next suggested workout", "Chest & Triceps"),
                 
-                const SizedBox(height: 120),
+                const SizedBox(height: 20),
               ],
             ),
           );
         },
       ),
+      bottomNavigationBar: const FloatingBottomNavBar(currentIndex: 3),
     );
   }
 

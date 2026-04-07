@@ -42,6 +42,8 @@ dependencies:
   flutter_animate: ^4.5.2
   flutter_screenutil: ^5.9.3
   flutter_svg: ^2.0.10+1
+  dio: ^5.9.2
+  get_it: ^9.2.1
 
 dev_dependencies:
   flutter_test:

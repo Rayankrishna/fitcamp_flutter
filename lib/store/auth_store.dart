@@ -2,9 +2,9 @@
 import 'package:fitcamp_flutter/models/home_details_model.dart';
 import 'package:fitcamp_flutter/shared/enums.dart';
 import 'package:fitcamp_flutter/shared/app_snackbar.dart';
+import 'package:fitcamp_flutter/storage_manager.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../services/api_provider.dart';
 import '../services/service_config.dart';
 
 part 'auth_store.g.dart';
@@ -14,7 +14,7 @@ class AuthStore extends _AuthStoreBase with _$AuthStore {
 }
 
 abstract class _AuthStoreBase with Store {
-  final ApiProvider _apiProvider = ApiProvider();
+  HttpClient get _httpClient => http ?? HttpClient.init();
 
   @observable
   LoadingStatusEnum loginState = LoadingStatusEnum.initial;
@@ -77,15 +77,29 @@ abstract class _AuthStoreBase with Store {
 
     try {
       var dto = {'email': email, 'password': password};
-      final response = await _apiProvider.post(ServiceConfig.loginUrl, body: dto);
+      final response = await _httpClient.post(
+        ServiceConfig.loginUrl,
+        data: dto,
+      );
 
       final token = response['session']?['access_token'];
 
       if (token != null) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('access_token', token);
+        await StorageManager.instance!.saveStringValue(
+          StorageManager.xToken,
+          token,
+        );
         accessToken = token;
         isAuthenticated = true;
+
+        // Re-initialize HttpClient with the new token
+        HttpClient.init(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        );
+
         loginState = LoadingStatusEnum.success;
         return true;
       } else {
@@ -102,20 +116,46 @@ abstract class _AuthStoreBase with Store {
   }
 
   @action
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('access_token');
+    await StorageManager.instance!.saveStringValue(StorageManager.xToken, "");
+    accessToken = null;
+    isAuthenticated = false;
+
+    // Reset HttpClient to guest
+    HttpClient.init();
+  }
+
+  @action
   Future<bool> register(String email, String password) async {
     registerState = LoadingStatusEnum.loading;
     errorMessage = null;
 
     try {
       var dto = {'email': email, 'password': password};
-      final response = await _apiProvider.post(ServiceConfig.registerUrl, body: dto);
+      final response = await _httpClient.post(
+        ServiceConfig.registerUrl,
+        data: dto,
+      );
       final token = response['session']?['access_token'];
 
       if (token != null) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('access_token', token);
+        await StorageManager.instance!.saveStringValue(
+          StorageManager.xToken,
+          token,
+        );
         accessToken = token;
         isAuthenticated = true;
+
+        // // Re-initialize HttpClient with the new token
+        // HttpClient.init(headers: {
+        //   'Content-Type': 'application/json',
+        //   'Authorization': 'Bearer $token',
+        // });
+
         registerState = LoadingStatusEnum.success;
         return true;
       } else {
@@ -137,8 +177,9 @@ abstract class _AuthStoreBase with Store {
     errorMessage = null;
 
     try {
-      final response = await _apiProvider.get(ServiceConfig.homeUrl);
+      final response = await _httpClient.get(ServiceConfig.homeUrl);
       homeData = HomeDetailsModel.fromJson(response);
+      print("fhjubfshufi $response");
       homeDataState = LoadingStatusEnum.success;
     } catch (e) {
       homeDataState = LoadingStatusEnum.error;
@@ -148,7 +189,11 @@ abstract class _AuthStoreBase with Store {
   }
 
   @action
-  Future<bool> updateGoals({int? calorieGoal, int? proteinGoal, int? fatGoal}) async {
+  Future<bool> updateGoals({
+    int? calorieGoal,
+    int? proteinGoal,
+    int? fatGoal,
+  }) async {
     goalsUpdateState = LoadingStatusEnum.loading;
     errorMessage = null;
 
@@ -158,7 +203,7 @@ abstract class _AuthStoreBase with Store {
       if (proteinGoal != null) dto['protein_goal'] = proteinGoal;
       if (fatGoal != null) dto['fat_goal'] = fatGoal;
 
-      await _apiProvider.post(ServiceConfig.profileGoalsUrl, body: dto);
+      await _httpClient.post(ServiceConfig.profileGoalsUrl, data: dto);
       await fetchHomeData(); // Refresh data
       goalsUpdateState = LoadingStatusEnum.success;
       return true;
@@ -181,7 +226,7 @@ abstract class _AuthStoreBase with Store {
       if (weight != null) dto['weight'] = weight;
       if (age != null) dto['age'] = age;
 
-      await _apiProvider.post(ServiceConfig.profileSetupUrl, body: dto);
+      await _httpClient.post(ServiceConfig.profileSetupUrl, data: dto);
       await fetchHomeData(); // Refresh data
       profileUpdateState = LoadingStatusEnum.success;
       return true;
@@ -199,7 +244,7 @@ abstract class _AuthStoreBase with Store {
 
     try {
       final String today = DateTime.now().toIso8601String().split('T')[0];
-      final response = await _apiProvider.get(
+      final response = await _httpClient.get(
         ServiceConfig.dailyMacrosUrl(today),
       );
       dailyMacros = response;
@@ -211,9 +256,11 @@ abstract class _AuthStoreBase with Store {
   @action
   Future<void> fetchWorkouts() async {
     errorMessage = null;
+    print("fetchWorkouts response ");
 
     try {
-      final response = await _apiProvider.get(ServiceConfig.workoutUrl);
+      final response = await _httpClient.get(ServiceConfig.workoutUrl);
+      print("fetchWorkouts response $response");
       if (response is List) {
         workouts = response;
       } else {
@@ -229,10 +276,33 @@ abstract class _AuthStoreBase with Store {
     errorMessage = null;
 
     try {
-      final response = await _apiProvider.get(ServiceConfig.profileUrl);
+      final response = await _httpClient.get(ServiceConfig.profileUrl);
       profileData = response;
     } catch (e) {
       errorMessage = e.toString();
+    }
+  }
+
+  @action
+  Future<void> getStoredValues() async {
+    // Check if StorageManager is initialized
+    if (StorageManager.instance == null) {
+      return;
+    }
+
+    String? _token = StorageManager.instance!.getStringValue(
+      StorageManager.xToken,
+    );
+
+    if (_token != null && _token.isNotEmpty) {
+      accessToken = _token;
+      // Initialize HttpClient with the stored token
+      HttpClient.init(
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $_token',
+        },
+      );
     }
   }
 }
