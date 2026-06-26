@@ -3,6 +3,9 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../store/auth_store.dart';
 import '../../shared/bottom_nav_bar.dart';
+import '../../shared/app_snackbar.dart';
+import 'meal_builder_page.dart';
+import 'barcode_scanner_page.dart';
 
 class FoodTrackerPage extends StatefulWidget {
   const FoodTrackerPage({super.key});
@@ -65,15 +68,18 @@ class _FoodTrackerPageState extends State<FoodTrackerPage> {
                     children: [
                       Text("Total Consumed", style: Theme.of(context).textTheme.labelMedium),
                       const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
-                        children: [
-                          Text("$totalCalories", style: Theme.of(context).textTheme.displayLarge?.copyWith(fontSize: 64)),
-                          const SizedBox(width: 4),
-                          Text("kcal", style: Theme.of(context).textTheme.titleMedium),
-                        ],
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          textBaseline: TextBaseline.alphabetic,
+                          children: [
+                            Text("$totalCalories", style: Theme.of(context).textTheme.displayLarge?.copyWith(fontSize: 64)),
+                            const SizedBox(width: 4),
+                            Text("kcal", style: Theme.of(context).textTheme.titleMedium),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -138,7 +144,7 @@ class _FoodTrackerPageState extends State<FoodTrackerPage> {
           children: [
             FloatingActionButton.extended(
               heroTag: "manualAction",
-              onPressed: () {},
+              onPressed: _openMealBuilder,
               backgroundColor: Colors.white,
               foregroundColor: Colors.black,
               elevation: 2,
@@ -148,7 +154,7 @@ class _FoodTrackerPageState extends State<FoodTrackerPage> {
             const SizedBox(width: 12),
             FloatingActionButton.extended(
               heroTag: "barcodeAction",
-              onPressed: () {},
+              onPressed: _scanBarcode,
               backgroundColor: Colors.black,
               foregroundColor: Colors.white,
               icon: const Icon(Icons.barcode_reader),
@@ -160,35 +166,229 @@ class _FoodTrackerPageState extends State<FoodTrackerPage> {
     );
   }
 
+  void _openMealBuilder() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const MealBuilderPage()),
+    ).then((_) => _store.fetchDailyMacros());
+  }
+
+  void _scanBarcode() async {
+    final barcode = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(builder: (_) => const BarcodeScannerPage()),
+    );
+
+    if (barcode == null || barcode.trim().isEmpty) return;
+
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator(color: Colors.white)),
+    );
+
+    final food = await _store.lookupFoodByBarcode(barcode.trim());
+    if (mounted) Navigator.pop(context);
+
+    if (food != null) {
+      _showSingleLogDialog(food);
+    }
+  }
+
+  void _showSingleLogDialog(Map<String, dynamic> food) {
+    final gramsController = TextEditingController(text: "100");
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            final double g = double.tryParse(gramsController.text.trim()) ?? 0.0;
+            final double cal = ((food['calories'] as num?)?.toDouble() ?? 0.0) * g / 100.0;
+            final double pro = ((food['protein'] as num?)?.toDouble() ?? 0.0) * g / 100.0;
+            final double carb = ((food['carbs'] as num?)?.toDouble() ?? 0.0) * g / 100.0;
+            final double fat = ((food['fat'] as num?)?.toDouble() ?? 0.0) * g / 100.0;
+
+            return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    food['name'] ?? 'Product Details',
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "Portion size calculator",
+                    style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                  ),
+                ],
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Enter weight in grams",
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: gramsController,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      autofocus: true,
+                      onChanged: (val) {
+                        setDialogState(() {});
+                      },
+                      decoration: InputDecoration(
+                        suffixText: "grams",
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      ),
+                    ),
+                    const Divider(height: 24),
+                    const Text(
+                      "Scaled Macros:",
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "${cal.toInt()}",
+                                style: const TextStyle(color: Colors.white, fontSize: 36, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(width: 4),
+                              const Text(
+                                "kcal",
+                                style: TextStyle(color: Colors.white70, fontSize: 14),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              _buildMacroMiniPanel("PROTEIN", "${pro.toStringAsFixed(1)}g"),
+                              _buildMacroMiniPanel("CARBS", "${carb.toStringAsFixed(1)}g"),
+                              _buildMacroMiniPanel("FAT", "${fat.toStringAsFixed(1)}g"),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Cancel", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (g <= 0) {
+                      AppSnackbar.show("Please enter a valid amount");
+                      return;
+                    }
+                    Navigator.pop(context);
+
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (_) => const Center(child: CircularProgressIndicator(color: Colors.white)),
+                    );
+                    final success = await _store.logMeal([
+                      {'food_id': food['id'], 'grams': g}
+                    ]);
+                    if (mounted) Navigator.pop(context);
+
+                    if (success) {
+                      AppSnackbar.show("Logged ${food['name']} successfully!");
+                      _store.fetchDailyMacros();
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  ),
+                  child: const Text("Log Item", style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildMacroMiniPanel(String label, String value) {
+    return Column(
+      children: [
+        Text(label, style: const TextStyle(color: Colors.white54, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.1)),
+        const SizedBox(height: 2),
+        Text(value, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+      ],
+    );
+  }
+
   Widget _buildMacroCard(String label, String value, double percent) {
-    return Container(
-      width: 100,
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withAlpha(5), blurRadius: 10, offset: const Offset(0, 4))
-        ]
-      ),
-      child: Column(
-        children: [
-          SizedBox(
-            width: 50,
-            height: 50,
-            child: CircularProgressIndicator(
-              value: percent,
-              strokeWidth: 6,
-              color: Colors.black,
-              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-              strokeCap: StrokeCap.round,
+    return Expanded(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 4),
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withAlpha(5), blurRadius: 10, offset: const Offset(0, 4))
+          ]
+        ),
+        child: Column(
+          children: [
+            SizedBox(
+              width: 50,
+              height: 50,
+              child: CircularProgressIndicator(
+                value: percent,
+                strokeWidth: 6,
+                color: Colors.black,
+                backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                strokeCap: StrokeCap.round,
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-          Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 4),
-          Text(value, style: Theme.of(context).textTheme.bodyMedium),
-        ],
+            const SizedBox(height: 16),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold)),
+              ),
+            ),
+            const SizedBox(height: 4),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(value, style: Theme.of(context).textTheme.bodyMedium),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

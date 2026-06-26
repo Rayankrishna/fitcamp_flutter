@@ -128,12 +128,28 @@ abstract class _AuthStoreBase with Store {
   }
 
   @action
-  Future<bool> register(String email, String password) async {
+  Future<bool> register({
+    required String email,
+    required String password,
+    required double height,
+    required double weight,
+    required int age,
+    required String activityLevel,
+    required String dietGoal,
+  }) async {
     registerState = LoadingStatusEnum.loading;
     errorMessage = null;
 
     try {
-      var dto = {'email': email, 'password': password};
+      var dto = {
+        'email': email,
+        'password': password,
+        'height': height,
+        'weight': weight,
+        'age': age,
+        'activity_level': activityLevel,
+        'diet_goal': dietGoal,
+      };
       final response = await _httpClient.post(
         ServiceConfig.registerUrl,
         data: dto,
@@ -150,11 +166,13 @@ abstract class _AuthStoreBase with Store {
         accessToken = token;
         isAuthenticated = true;
 
-        // // Re-initialize HttpClient with the new token
-        // HttpClient.init(headers: {
-        //   'Content-Type': 'application/json',
-        //   'Authorization': 'Bearer $token',
-        // });
+        // Re-initialize HttpClient with the new token
+        HttpClient.init(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        );
 
         registerState = LoadingStatusEnum.success;
         return true;
@@ -177,9 +195,13 @@ abstract class _AuthStoreBase with Store {
     errorMessage = null;
 
     try {
-      final response = await _httpClient.get(ServiceConfig.homeUrl);
-      homeData = HomeDetailsModel.fromJson(response);
-      print("fhjubfshufi $response");
+      final results = await Future.wait([
+        _httpClient.get(ServiceConfig.homeUrl),
+        _httpClient.get(ServiceConfig.profileUrl),
+      ]);
+      homeData = HomeDetailsModel.fromJson(results[0]);
+      profileData = results[1] as Map<String, dynamic>?;
+      print("fetchHomeData success, profileData: $profileData");
       homeDataState = LoadingStatusEnum.success;
     } catch (e) {
       homeDataState = LoadingStatusEnum.error;
@@ -216,7 +238,13 @@ abstract class _AuthStoreBase with Store {
   }
 
   @action
-  Future<bool> updateProfile({int? height, int? weight, int? age}) async {
+  Future<bool> updateProfile({
+    double? height,
+    double? weight,
+    int? age,
+    String? activityLevel,
+    String? dietGoal,
+  }) async {
     profileUpdateState = LoadingStatusEnum.loading;
     errorMessage = null;
 
@@ -225,8 +253,10 @@ abstract class _AuthStoreBase with Store {
       if (height != null) dto['height'] = height;
       if (weight != null) dto['weight'] = weight;
       if (age != null) dto['age'] = age;
+      if (activityLevel != null) dto['activity_level'] = activityLevel;
+      if (dietGoal != null) dto['diet_goal'] = dietGoal;
 
-      await _httpClient.post(ServiceConfig.profileSetupUrl, data: dto);
+      await _httpClient.put(ServiceConfig.profileUrl, data: dto);
       await fetchHomeData(); // Refresh data
       profileUpdateState = LoadingStatusEnum.success;
       return true;
@@ -259,7 +289,11 @@ abstract class _AuthStoreBase with Store {
     print("fetchWorkouts response ");
 
     try {
-      final response = await _httpClient.get(ServiceConfig.workoutUrl);
+      final today = DateTime.now();
+      final start = DateTime(today.year - 1, today.month, today.day).toIso8601String().split('T')[0];
+      final end = DateTime(today.year + 1, today.month, today.day).toIso8601String().split('T')[0];
+      
+      final response = await _httpClient.get(ServiceConfig.workoutCalendarUrl(start, end));
       print("fetchWorkouts response $response");
       if (response is List) {
         workouts = response;
@@ -284,6 +318,87 @@ abstract class _AuthStoreBase with Store {
   }
 
   @action
+  Future<Map<String, dynamic>?> lookupFoodByBarcode(String barcode) async {
+    errorMessage = null;
+    try {
+      final response = await _httpClient.get(ServiceConfig.foodByBarcodeUrl(barcode));
+      return response;
+    } catch (e) {
+      errorMessage = e.toString();
+      AppSnackbar.show(errorMessage ?? 'Error looking up barcode');
+      return null;
+    }
+  }
+
+  @action
+  Future<List<Map<String, dynamic>>> searchFoods(String query) async {
+    errorMessage = null;
+    try {
+      final response = await _httpClient.get(ServiceConfig.foodSearchUrl(query));
+      if (response is List) {
+        return List<Map<String, dynamic>>.from(
+          response.map((x) => Map<String, dynamic>.from(x as Map)),
+        );
+      }
+      return [];
+    } catch (e) {
+      errorMessage = e.toString();
+      AppSnackbar.show(errorMessage ?? 'Error searching food');
+      return [];
+    }
+  }
+
+  @action
+  Future<Map<String, dynamic>?> createCustomFood({
+    required String name,
+    required double calories,
+    required double protein,
+    required double carbs,
+    required double fat,
+    double fiber = 0.0,
+    String? barcode,
+  }) async {
+    errorMessage = null;
+    try {
+      final payload = {
+        'name': name,
+        'calories': calories,
+        'protein': protein,
+        'carbs': carbs,
+        'fat': fat,
+        'fiber': fiber,
+        if (barcode != null) 'barcode': barcode,
+      };
+      final response = await _httpClient.post('/food', data: payload);
+      return response;
+    } catch (e) {
+      errorMessage = e.toString();
+      AppSnackbar.show(errorMessage ?? 'Error creating custom food');
+      return null;
+    }
+  }
+
+  @action
+  Future<bool> logMeal(List<Map<String, dynamic>> items) async {
+    errorMessage = null;
+    try {
+      final String today = DateTime.now().toIso8601String().split('T')[0];
+      final payload = {
+        'date': today,
+        'items': items,
+      };
+      await _httpClient.post(ServiceConfig.mealUrl, data: payload);
+      await fetchDailyMacros(); // Refresh macros
+      await fetchHomeData(); // Refresh home dashboard macros
+      return true;
+    } catch (e) {
+      errorMessage = e.toString();
+      AppSnackbar.show(errorMessage ?? 'Error logging meal');
+      return false;
+    }
+  }
+
+  @action
   Future<void> getStoredValues() async {
     // Check if StorageManager is initialized
     if (StorageManager.instance == null) {
@@ -296,6 +411,7 @@ abstract class _AuthStoreBase with Store {
 
     if (_token != null && _token.isNotEmpty) {
       accessToken = _token;
+      isAuthenticated = true;
       // Initialize HttpClient with the stored token
       HttpClient.init(
         headers: {

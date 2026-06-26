@@ -273,14 +273,42 @@ mixin _$AuthStore on _AuthStoreBase, Store {
     return _$loginAsyncAction.run(() => super.login(email, password));
   }
 
+  late final _$logoutAsyncAction = AsyncAction(
+    '_AuthStoreBase.logout',
+    context: context,
+  );
+
+  @override
+  Future<void> logout() {
+    return _$logoutAsyncAction.run(() => super.logout());
+  }
+
   late final _$registerAsyncAction = AsyncAction(
     '_AuthStoreBase.register',
     context: context,
   );
 
   @override
-  Future<bool> register(String email, String password) {
-    return _$registerAsyncAction.run(() => super.register(email, password));
+  Future<bool> register({
+    required String email,
+    required String password,
+    required double height,
+    required double weight,
+    required int age,
+    required String activityLevel,
+    required String dietGoal,
+  }) {
+    return _$registerAsyncAction.run(
+      () => super.register(
+        email: email,
+        password: password,
+        height: height,
+        weight: weight,
+        age: age,
+        activityLevel: activityLevel,
+        dietGoal: dietGoal,
+      ),
+    );
   }
 
   late final _$fetchHomeDataAsyncAction = AsyncAction(
@@ -315,9 +343,21 @@ mixin _$AuthStore on _AuthStoreBase, Store {
   );
 
   @override
-  Future<bool> updateProfile({int? height, int? weight, int? age}) {
+  Future<bool> updateProfile({
+    double? height,
+    double? weight,
+    int? age,
+    String? activityLevel,
+    String? dietGoal,
+  }) {
     return _$updateProfileAsyncAction.run(
-      () => super.updateProfile(height: height, weight: weight, age: age),
+      () => super.updateProfile(
+        height: height,
+        weight: weight,
+        age: age,
+        activityLevel: activityLevel,
+        dietGoal: dietGoal,
+      ),
     );
   }
 
@@ -349,6 +389,66 @@ mixin _$AuthStore on _AuthStoreBase, Store {
   @override
   Future<void> fetchProfile() {
     return _$fetchProfileAsyncAction.run(() => super.fetchProfile());
+  }
+
+  late final _$lookupFoodByBarcodeAsyncAction = AsyncAction(
+    '_AuthStoreBase.lookupFoodByBarcode',
+    context: context,
+  );
+
+  @override
+  Future<Map<String, dynamic>?> lookupFoodByBarcode(String barcode) {
+    return _$lookupFoodByBarcodeAsyncAction.run(
+      () => super.lookupFoodByBarcode(barcode),
+    );
+  }
+
+  late final _$searchFoodsAsyncAction = AsyncAction(
+    '_AuthStoreBase.searchFoods',
+    context: context,
+  );
+
+  @override
+  Future<List<Map<String, dynamic>>> searchFoods(String query) {
+    return _$searchFoodsAsyncAction.run(() => super.searchFoods(query));
+  }
+
+  late final _$createCustomFoodAsyncAction = AsyncAction(
+    '_AuthStoreBase.createCustomFood',
+    context: context,
+  );
+
+  @override
+  Future<Map<String, dynamic>?> createCustomFood({
+    required String name,
+    required double calories,
+    required double protein,
+    required double carbs,
+    required double fat,
+    double fiber = 0.0,
+    String? barcode,
+  }) {
+    return _$createCustomFoodAsyncAction.run(
+      () => super.createCustomFood(
+        name: name,
+        calories: calories,
+        protein: protein,
+        carbs: carbs,
+        fat: fat,
+        fiber: fiber,
+        barcode: barcode,
+      ),
+    );
+  }
+
+  late final _$logMealAsyncAction = AsyncAction(
+    '_AuthStoreBase.logMeal',
+    context: context,
+  );
+
+  @override
+  Future<bool> logMeal(List<Map<String, dynamic>> items) {
+    return _$logMealAsyncAction.run(() => super.logMeal(items));
   }
 
   late final _$getStoredValuesAsyncAction = AsyncAction(

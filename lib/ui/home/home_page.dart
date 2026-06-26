@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:fitcamp_flutter/shared/enums.dart';
+import 'package:table_calendar/table_calendar.dart';
 import '../../store/auth_store.dart';
+import '../../store/workout_store.dart';
 import '../../shared/animated_summary_card.dart';
 import '../../shared/bottom_nav_bar.dart';
 
@@ -15,11 +17,24 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final AuthStore _homeStore = AuthStore.instance;
+  final WorkoutStore _workoutStore = WorkoutStore.instance;
+
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay = DateTime.now();
 
   @override
   void initState() {
     super.initState();
     _homeStore.fetchHomeData();
+    _fetchCalendarDataForMonth(_focusedDay);
+  }
+
+  void _fetchCalendarDataForMonth(DateTime month) {
+    final start = DateTime(month.year, month.month, 1);
+    final end = DateTime(month.year, month.month + 1, 0);
+    final startStr = start.toIso8601String().split('T')[0];
+    final endStr = end.toIso8601String().split('T')[0];
+    _workoutStore.fetchCalendarWorkouts(startStr, endStr);
   }
 
   @override
@@ -95,12 +110,22 @@ class _HomePageState extends State<HomePage> {
 
                       const SizedBox(height: 32),
 
+                      // Activity Calendar
+                      _buildSectionTitle("Activity Calendar"),
+                      const SizedBox(height: 16),
+                      AnimatedSummaryCard(
+                        delay: 300.ms,
+                        child: _buildCalendarSection(),
+                      ),
+
+                      const SizedBox(height: 32),
+
                       // Workout Summary
-                      _buildSectionTitle("Today's Workouts"),
+                      _buildSectionTitle("Completed Workouts"),
                       const SizedBox(height: 16),
                       AnimatedSummaryCard(
                         delay: 400.ms,
-                        child: _buildWorkoutSummary(),
+                        child: _buildSelectedDayWorkouts(),
                       ),
 
                       const SizedBox(height: 100),
@@ -388,12 +413,12 @@ class _HomePageState extends State<HomePage> {
                   height: 56,
                   child: ElevatedButton(
                     onPressed: () async {
-                      final h = int.tryParse(heightController.text);
-                      final w = int.tryParse(weightController.text);
+                      final h = double.tryParse(heightController.text);
+                      final w = double.tryParse(weightController.text);
                       final a = int.tryParse(ageController.text);
                       if (h != null && w != null && a != null) {
                         final success = await _homeStore.updateProfile(
-                          height: h,
+                          height: h.roundToDouble(),
                           weight: w,
                           age: a,
                         );
@@ -479,25 +504,28 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          textBaseline: TextBaseline.alphabetic,
-          children: [
-            Text(
-              "$remainingCals",
-              style: Theme.of(
-                context,
-              ).textTheme.displayLarge?.copyWith(fontSize: 64),
-            ),
-            const SizedBox(width: 6),
-            Text(
-              "kcal",
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(
+                "$remainingCals",
+                style: Theme.of(
+                  context,
+                ).textTheme.displayLarge?.copyWith(fontSize: 64),
               ),
-            ),
-          ],
+              const SizedBox(width: 6),
+              Text(
+                "kcal",
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 32),
         Row(
@@ -593,67 +621,132 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildWorkoutSummary() {
-    final summary = _homeStore.homeData?.workoutSummary;
-    if (summary == null) return const SizedBox();
 
-    final workouts = summary.workouts;
-    if (workouts == null || workouts.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20),
-        child: Row(
-          children: [
-            const Icon(Icons.info_outline, color: Colors.grey),
-            const SizedBox(width: 12),
-            Text(
-              "No workouts logged for today.",
-              style: TextStyle(color: Colors.grey[600]),
+
+  Widget _buildCalendarSection() {
+    return Observer(
+      builder: (_) {
+        return TableCalendar(
+          focusedDay: _focusedDay,
+          firstDay: DateTime.now().subtract(const Duration(days: 365)),
+          lastDay: DateTime.now().add(const Duration(days: 365)),
+          calendarFormat: CalendarFormat.month,
+          startingDayOfWeek: StartingDayOfWeek.monday,
+          headerStyle: HeaderStyle(
+            formatButtonVisible: false,
+            titleCentered: true,
+            titleTextStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ) ??
+                const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          calendarStyle: CalendarStyle(
+            selectedDecoration: const BoxDecoration(
+              color: Colors.black,
+              shape: BoxShape.circle,
             ),
-          ],
-        ),
-      );
-    }
-
-    final latestWorkout = workouts.last;
-
-    return Row(
-      children: [
-        Container(
-          width: 64,
-          height: 64,
-          decoration: BoxDecoration(
-            color: Colors.black,
-            borderRadius: BorderRadius.circular(18),
+            todayDecoration: BoxDecoration(
+              color: Colors.black.withAlpha(30),
+              shape: BoxShape.circle,
+            ),
+            markerDecoration: const BoxDecoration(
+              color: Colors.black,
+              shape: BoxShape.circle,
+            ),
           ),
-          child: const Icon(
-            Icons.fitness_center_rounded,
-            color: Colors.white,
-            size: 28,
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                latestWorkout['name'] ?? 'Workout',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontSize: 20),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                "Completed today",
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+          selectedDayPredicate: (day) {
+            return isSameDay(_selectedDay, day);
+          },
+          onDaySelected: (selectedDay, focusedDay) {
+            setState(() {
+              _selectedDay = selectedDay;
+              _focusedDay = focusedDay;
+            });
+          },
+          onPageChanged: (focusedDay) {
+            setState(() {
+              _focusedDay = focusedDay;
+            });
+            _fetchCalendarDataForMonth(focusedDay);
+          },
+          eventLoader: (day) {
+            final dayStr = day.toIso8601String().split('T')[0];
+            final list = _workoutStore.calendarWorkouts ?? [];
+            return list.where((w) => w.date == dayStr).toList();
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildSelectedDayWorkouts() {
+    return Observer(
+      builder: (_) {
+        final dayStr = _selectedDay!.toIso8601String().split('T')[0];
+        final list = (_workoutStore.calendarWorkouts ?? [])
+            .where((w) => w.date == dayStr)
+            .toList();
+
+        if (list.isEmpty) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Row(
+              children: [
+                const Icon(Icons.info_outline, color: Colors.grey),
+                const SizedBox(width: 12),
+                Text(
+                  "No workouts recorded for ${dayStr == DateTime.now().toIso8601String().split('T')[0] ? 'today' : dayStr}.",
+                  style: TextStyle(color: Colors.grey[600]),
                 ),
+              ],
+            ),
+          );
+        }
+
+        return Column(
+          children: list.map((workout) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                children: [
+                  Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Icon(
+                      Icons.fitness_center_rounded,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          workout.name,
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          "${workout.templateName ?? 'Routine'} • ${workout.totalSets} sets completed",
+                          style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-        const Icon(Icons.chevron_right_rounded, color: Colors.grey, size: 28),
-      ],
+            );
+          }).toList(),
+        );
+      },
     );
   }
 }

@@ -22,12 +22,19 @@ class ServiceConfig {
   static String foodByBarcodeUrl(String barcode) => '/food/$barcode';
   static const String mealUrl = '/food/meal';
   static String dailyMacrosUrl(String date) => '/food/daily/macros?date=$date';
+  static String foodSearchUrl(String query) => '/food/search?q=${Uri.encodeQueryComponent(query)}';
 
   // Workout
   static const String workoutUrl = '/workout';
   static const String exerciseUrl = '/workout/exercise';
   static const String setUrl = '/workout/set';
   static String workoutByIdUrl(String id) => '/workout/$id';
+  static const String programUrl = '/workout/programs';
+  static const String templateUrl = '/workout/templates';
+  static String templateExercisesUrl(String templateId) => '/workout/templates/$templateId/exercises';
+  static String templateByIdUrl(String templateId) => '/workout/templates/$templateId';
+  static String workoutCalendarUrl(String start, String end) => '/workout/calendar?start_date=$start&end_date=$end';
+  static String workoutProgressUrl(String exerciseId) => '/workout/progress/$exerciseId';
 
   // AI Suggestions
   static const String aiSuggestionsUrl = '/ai/suggestions';
@@ -70,26 +77,23 @@ class HttpClient {
     if (error.response == null) {
       return error.message;
     } else {
-      if (error.response!.data is Map &&
-          error.response!.data['message'] == "Unauthorized") {
-        return error.response!.data['message'];
+      if (error.response!.statusCode == 401) {
+        authStore.logout();
+        if (error.response!.data is Map) {
+          final errVal = error.response!.data['error'] ?? error.response!.data['message'];
+          if (errVal != null) return errVal.toString();
+        }
+        return "Invalid or expired token";
       }
       if (error.response!.statusCode == 500) {
         return error.response!.data is Map
-            ? error.response!.data['message']
+            ? (error.response!.data['error'] ?? error.response!.data['message'] ?? 'Internal Server Error')
             : 'Internal Server Error';
       }
       if (error.response!.statusCode == 403) {
         return error.response!.data is Map
-            ? error.response!.data['message']
+            ? (error.response!.data['error'] ?? error.response!.data['message'] ?? 'Forbidden')
             : 'Forbidden';
-      }
-
-      if (error.response!.data is Map &&
-          error.response!.data['message'] ==
-              "Unauthorized: Invalid or expired token") {
-        authStore.logout(); // Our app uses logout() instead of clearUser()
-        return "token expired";
       }
 
       // ... (rest of the error parsing logic but with runtimeType checks)

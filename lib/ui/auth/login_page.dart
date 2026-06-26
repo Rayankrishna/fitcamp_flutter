@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../store/auth_store.dart';
+import 'onboarding_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -29,26 +30,31 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    final success =
-        _isLogin
-            ? await _authStore.login(
-              _emailController.text,
-              _passwordController.text,
-            )
-            : await _authStore.register(
-              _emailController.text,
-              _passwordController.text,
-            );
-
-    if (success && mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const HomePage()),
+    if (_isLogin) {
+      final success = await _authStore.login(
+        _emailController.text,
+        _passwordController.text,
       );
-    } else if (mounted && _authStore.errorMessage != null) {
-      ScaffoldMessenger.of(
+      if (success && mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomePage()),
+        );
+      } else if (mounted && _authStore.errorMessage != null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(_authStore.errorMessage!)));
+      }
+    } else {
+      Navigator.push(
         context,
-      ).showSnackBar(SnackBar(content: Text(_authStore.errorMessage!)));
+        MaterialPageRoute(
+          builder: (_) => OnboardingPage(
+            email: _emailController.text,
+            password: _passwordController.text,
+          ),
+        ),
+      );
     }
   }
 
